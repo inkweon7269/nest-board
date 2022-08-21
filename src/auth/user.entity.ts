@@ -7,6 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { BoardEntity } from '../boards/board.entity';
+import { TaskEntity } from '../tasks/task.entity';
 
 @Entity()
 @Unique(['username'])
@@ -22,4 +23,7 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany((type) => BoardEntity, (board) => board.user, { eager: true })
   boards: BoardEntity[];
+
+  @OneToMany((type) => TaskEntity, (task) => task.user, { eager: true })
+  tasks: TaskEntity[];
 }

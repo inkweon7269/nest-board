@@ -5,6 +5,7 @@ import * as config from 'config';
 import { TransformInterceptor } from './transform.interceptor';
 
 async function bootstrap() {
+  const logger = new Logger();
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
@@ -14,6 +15,6 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  Logger.log(`Application running on port ${port}`);
+  logger.log(`Application running on port ${port}`);
 }
 bootstrap();

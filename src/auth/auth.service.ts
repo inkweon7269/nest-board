@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,11 +21,15 @@ export class AuthService {
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { username, password } = authCredentialsDto;
+    const { username, password, age } = authCredentialsDto;
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = this.userRepo.create({ username, password: hashedPassword });
+    const user = this.userRepo.create({
+      username,
+      password: hashedPassword,
+      age,
+    });
 
     try {
       await this.userRepo.save(user);
@@ -37,10 +42,8 @@ export class AuthService {
     }
   }
 
-  async signIn(
-    authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
-    const { username, password } = authCredentialsDto;
+  async signIn(attrs: Partial<UserEntity>): Promise<{ accessToken: string }> {
+    const { username, password } = attrs;
     const user = await this.userRepo.findOne({
       where: { username },
     });
@@ -54,5 +57,26 @@ export class AuthService {
     } else {
       throw new UnauthorizedException('Login failed');
     }
+  }
+
+  async findOne(id: number) {
+    const user = await this.userRepo.findOne({ where: { id }});
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+
+    return user;
+  }
+
+  async update(id: number, attrs: Partial<UserEntity>) {
+    const user = await this.findOne(id);
+
+    Object.assign(user, attrs);
+    return this.userRepo.save(user);
+  }
+
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    return this.userRepo.remove(user);
   }
 }

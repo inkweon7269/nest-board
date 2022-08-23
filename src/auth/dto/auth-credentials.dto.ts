@@ -1,5 +1,6 @@
 import {
   IsNotEmpty,
+  IsNumber,
   IsString,
   Matches,
   MaxLength,
@@ -21,4 +22,8 @@ export class AuthCredentialsDto {
   })
   @IsNotEmpty()
   password: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  age: number;
 }

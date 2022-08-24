@@ -11,7 +11,7 @@ import {
   UseGuards,
   ValidationPipe,
   UseInterceptors,
-  ClassSerializerInterceptor,
+  ClassSerializerInterceptor, Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
@@ -29,6 +29,16 @@ import { UserDto } from './dto/user.dto';
 @Serialize(UserDto)
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get('/colors/:color')
+  setColor(@Param('color') color: string, @Session() session: any) {
+    session.color = color;
+  }
+
+  @Get('/colors')
+  getColor(@Session() session: any) {
+    return session.color;
+  }
 
   @Post('/signup')
   signUp(

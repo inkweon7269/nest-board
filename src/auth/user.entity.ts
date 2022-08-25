@@ -12,6 +12,7 @@ import {
 import { BoardEntity } from '../boards/board.entity';
 import { TaskEntity } from '../tasks/task.entity';
 import { Exclude } from 'class-transformer';
+import { ReportsEntity } from '../reports/reports.entity';
 
 @Entity()
 @Unique(['username'])
@@ -34,6 +35,9 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany((type) => TaskEntity, (task) => task.user, { eager: true })
   tasks: TaskEntity[];
+
+  @OneToMany((type) => ReportsEntity, (report) => report.user)
+  reports: ReportsEntity[];
 
   @AfterInsert()
   logInsert() {

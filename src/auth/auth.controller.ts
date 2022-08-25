@@ -26,7 +26,8 @@ import {
 import { UserDto } from './dto/user.dto';
 
 @Controller('auth')
-@Serialize(UserDto)
+// 로그인시 토큰값이 노출되지 않는 부작용이 생김
+// @Serialize(UserDto)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -38,6 +39,12 @@ export class AuthController {
   @Get('/colors')
   getColor(@Session() session: any) {
     return session.color;
+  }
+
+  @Post('/test')
+  @UseGuards(AuthGuard())
+  test(@GetUser() user: UserEntity) {
+    console.log('user', user);
   }
 
   @Post('/signup')
@@ -76,11 +83,5 @@ export class AuthController {
   @Delete('/:id')
   removeUser(@Param('id', ParseIntPipe) id, @GetUser() user: UserEntity) {
     return this.authService.remove(id);
-  }
-
-  @Post('/test')
-  @UseGuards(AuthGuard())
-  test(@GetUser() user: UserEntity) {
-    console.log('user', user);
   }
 }
